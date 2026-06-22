@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>ตรวจสอบสิทธิ์เบี้ยยังชีพผู้สูงอายุ</title>
+<title>ระบบตรวจสอบสิทธิ์เบี้ยยังชีพผู้สูงอายุ</title>
 
 <style>
 body{
@@ -16,7 +16,7 @@ body{
     background:white;
     padding:20px;
     border-radius:20px;
-    width:360px;
+    width:380px;
     margin:auto;
     box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
@@ -25,7 +25,7 @@ h1{
     color:#ff5c8a;
 }
 
-input{
+input, select{
     width:80%;
     padding:10px;
     margin:5px;
@@ -70,8 +70,24 @@ button:hover{
     <h1>👵👴 ตรวจสอบสิทธิ์</h1>
     <p>เบี้ยยังชีพผู้สูงอายุ (ปีงบประมาณ 2570–2571)</p>
 
-    <input type="number" id="day" placeholder="วันเกิด">
-    <input type="number" id="month" placeholder="เดือนเกิด">
+    <input type="number" id="day" placeholder="วันเกิด (1-31)">
+
+    <select id="month">
+        <option value="">-- เลือกเดือนเกิด --</option>
+        <option value="1">มกราคม</option>
+        <option value="2">กุมภาพันธ์</option>
+        <option value="3">มีนาคม</option>
+        <option value="4">เมษายน</option>
+        <option value="5">พฤษภาคม</option>
+        <option value="6">มิถุนายน</option>
+        <option value="7">กรกฎาคม</option>
+        <option value="8">สิงหาคม</option>
+        <option value="9">กันยายน</option>
+        <option value="10">ตุลาคม</option>
+        <option value="11">พฤศจิกายน</option>
+        <option value="12">ธันวาคม</option>
+    </select>
+
     <input type="number" id="year" placeholder="ปีเกิด (พ.ศ.)">
 
     <br>
@@ -100,17 +116,14 @@ function check(){
     let result = document.getElementById("result");
 
     if(!d || !m || !y){
-        result.innerHTML = "⚠️ กรุณากรอกวันเดือนปีเกิดให้ครบ";
+        result.innerHTML = "⚠️ กรุณากรอกวัน เดือน ปีเกิดให้ครบ";
         return;
     }
 
-    // แปลง พ.ศ. -> ค.ศ.
     let birthYearCE = y - 543;
-
     let birthDate = new Date(birthYearCE, m-1, d);
     let today = new Date();
 
-    // คำนวณอายุ
     let age = today.getFullYear() - birthDate.getFullYear();
     let mDiff = today.getMonth() - birthDate.getMonth();
 
@@ -118,11 +131,10 @@ function check(){
         age--;
     }
 
-    // วันครบ 60 ปี
     let sixtyYear = birthYearCE + 60;
     let sixtyDate = new Date(sixtyYear, m-1, d);
 
-    let receiveMonth = sixtyDate.getMonth() + 2; // เดือนถัดไปหลัง 60 ปี
+    let receiveMonth = sixtyDate.getMonth() + 2;
     let receiveYear = sixtyDate.getFullYear();
 
     let months = [
@@ -130,23 +142,22 @@ function check(){
         "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"
     ];
 
-    let msg = "";
-
     if(age >= 60){
-        msg = "✅ มีสิทธิรับเบี้ยยังชีพผู้สูงอายุแล้ว<br>"
-            + "🎂 อายุ: " + age + " ปี<br>"
-            + "📅 เริ่มรับเงิน: " + months[receiveMonth-1] + " " + (receiveYear + 543);
+        result.innerHTML =
+        "✅ มีสิทธิรับเบี้ยยังชีพ<br>" +
+        "🎂 อายุ: " + age + " ปี<br>" +
+        "📅 เริ่มรับเงิน: " + months[receiveMonth-1] + " " + (receiveYear + 543);
     }
     else if(age == 59){
-        msg = "🟡 ใกล้มีสิทธิ (สามารถลงทะเบียนล่วงหน้าได้)<br>"
-            + "🎂 อายุ: " + age + " ปี";
+        result.innerHTML =
+        "🟡 ใกล้มีสิทธิ สามารถลงทะเบียนล่วงหน้าได้<br>" +
+        "🎂 อายุ: " + age + " ปี";
     }
     else{
-        msg = "❌ ยังไม่มีสิทธิ (อายุ " + age + " ปี)<br>"
-            + "ต้องอายุครบ 60 ปีบริบูรณ์";
+        result.innerHTML =
+        "❌ ยังไม่มีสิทธิ<br>" +
+        "🎂 อายุ: " + age + " ปี (ต้องครบ 60 ปี)";
     }
-
-    result.innerHTML = msg;
 }
 </script>
 
