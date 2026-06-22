@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ตรวจสอบสิทธิ์เบี้ยยังชีพผู้สูงอายุ</title>
+
+<style>
+body{
+    font-family:sans-serif;
+    background:linear-gradient(135deg,#ffe6f0,#e6f7ff);
+    text-align:center;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    width:360px;
+    margin:auto;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+h1{
+    color:#ff5c8a;
+}
+
+input{
+    width:80%;
+    padding:10px;
+    margin:5px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    text-align:center;
+}
+
+button{
+    background:#ff5c8a;
+    color:white;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+button:hover{
+    background:#ff2f6d;
+}
+
+.result{
+    margin-top:15px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.doc{
+    text-align:left;
+    margin-top:15px;
+    background:#f9f9f9;
+    padding:10px;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>👵👴 ตรวจสอบสิทธิ์</h1>
+    <p>เบี้ยยังชีพผู้สูงอายุ (ปีงบประมาณ 2570–2571)</p>
+
+    <input type="number" id="day" placeholder="วันเกิด">
+    <input type="number" id="month" placeholder="เดือนเกิด">
+    <input type="number" id="year" placeholder="ปีเกิด (พ.ศ.)">
+
+    <br>
+    <button onclick="check()">ตรวจสอบสิทธิ์</button>
+
+    <div class="result" id="result"></div>
+
+    <div class="doc">
+        <b>📄 เอกสารที่ต้องใช้</b>
+        <ul>
+            <li>บัตรประชาชนตัวจริง</li>
+            <li>ทะเบียนบ้าน</li>
+            <li>สมุดบัญชีธนาคาร</li>
+            <li>หนังสือมอบอำนาจ (ถ้ามาแทน)</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+function check(){
+
+    let d = parseInt(document.getElementById("day").value);
+    let m = parseInt(document.getElementById("month").value);
+    let y = parseInt(document.getElementById("year").value);
+
+    let result = document.getElementById("result");
+
+    if(!d || !m || !y){
+        result.innerHTML = "⚠️ กรุณากรอกวันเดือนปีเกิดให้ครบ";
+        return;
+    }
+
+    // แปลง พ.ศ. -> ค.ศ.
+    let birthYearCE = y - 543;
+
+    let birthDate = new Date(birthYearCE, m-1, d);
+    let today = new Date();
+
+    // คำนวณอายุ
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let mDiff = today.getMonth() - birthDate.getMonth();
+
+    if(mDiff < 0 || (mDiff === 0 && today.getDate() < birthDate.getDate())){
+        age--;
+    }
+
+    // วันครบ 60 ปี
+    let sixtyYear = birthYearCE + 60;
+    let sixtyDate = new Date(sixtyYear, m-1, d);
+
+    let receiveMonth = sixtyDate.getMonth() + 2; // เดือนถัดไปหลัง 60 ปี
+    let receiveYear = sixtyDate.getFullYear();
+
+    let months = [
+        "มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
+        "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"
+    ];
+
+    let msg = "";
+
+    if(age >= 60){
+        msg = "✅ มีสิทธิรับเบี้ยยังชีพผู้สูงอายุแล้ว<br>"
+            + "🎂 อายุ: " + age + " ปี<br>"
+            + "📅 เริ่มรับเงิน: " + months[receiveMonth-1] + " " + (receiveYear + 543);
+    }
+    else if(age == 59){
+        msg = "🟡 ใกล้มีสิทธิ (สามารถลงทะเบียนล่วงหน้าได้)<br>"
+            + "🎂 อายุ: " + age + " ปี";
+    }
+    else{
+        msg = "❌ ยังไม่มีสิทธิ (อายุ " + age + " ปี)<br>"
+            + "ต้องอายุครบ 60 ปีบริบูรณ์";
+    }
+
+    result.innerHTML = msg;
+}
+</script>
+
+</body>
+</html>
